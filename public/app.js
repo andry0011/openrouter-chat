@@ -1226,10 +1226,29 @@ function renderToolsRow() {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'tool-card';
+
+    const hasImages = tool.beforeImage && tool.afterImage;
     card.innerHTML = `
-      <span class="tool-card-icon">${tool.icon || '✨'}</span>
-      <span class="tool-card-title">${escapeHtml(tool.title)}</span>
+      <div class="tool-media">
+        ${hasImages ? `
+          <div class="ba-slider">
+            <img class="ba-img ba-before" src="${escapeHtml(tool.beforeImage)}" alt="" draggable="false">
+            <img class="ba-img ba-after" src="${escapeHtml(tool.afterImage)}" alt="" draggable="false" style="clip-path: inset(0 0 0 50%);">
+            <div class="ba-handle" style="left:50%;"></div>
+          </div>
+        ` : `
+          <div class="tool-media-placeholder"><span class="tool-card-icon">${tool.icon || '✨'}</span></div>
+        `}
+        <div class="tool-media-gradient"></div>
+      </div>
+      <div class="tool-info">
+        <div class="tool-card-title">${escapeHtml(tool.title)}</div>
+        ${tool.subtitle ? `<div class="tool-card-subtitle">${escapeHtml(tool.subtitle)}</div>` : ''}
+      </div>
     `;
+
+    if (hasImages) initBeforeAfterSlider(card.querySelector('.ba-slider'));
+
     card.addEventListener('click', async () => {
       await switchMode('image');
       activeQuickChipKeyword = null;
@@ -1243,6 +1262,47 @@ function renderToolsRow() {
     });
     toolsRow.appendChild(card);
   });
+}
+
+// Интерактивный слайдер "до/после": тянем бегунок мышью или пальцем,
+// clip-path у верхней (after) картинки двигается вслед за курсором.
+function initBeforeAfterSlider(slider) {
+  const afterImg = slider.querySelector('.ba-after');
+  const handle = slider.querySelector('.ba-handle');
+  let dragging = false;
+  let moved = false;
+  let startX = 0;
+
+  function setPct(clientX) {
+    const rect = slider.getBoundingClientRect();
+    let pct = ((clientX - rect.left) / rect.width) * 100;
+    pct = Math.max(0, Math.min(100, pct));
+    afterImg.style.clipPath = `inset(0 0 0 ${pct}%)`;
+    handle.style.left = `${pct}%`;
+  }
+
+  slider.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    moved = false;
+    startX = e.clientX;
+    slider.setPointerCapture(e.pointerId);
+    setPct(e.clientX);
+    e.preventDefault();
+  });
+  slider.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    if (Math.abs(e.clientX - startX) > 3) moved = true;
+    setPct(e.clientX);
+  });
+  const stop = () => { dragging = false; };
+  slider.addEventListener('pointerup', stop);
+  slider.addEventListener('pointercancel', stop);
+
+  // Перетаскивание бегунка не должно запускать переход к генерации —
+  // только настоящий клик (без движения) открывает выбор фото.
+  slider.addEventListener('click', (e) => {
+    if (moved) { e.stopPropagation(); e.preventDefault(); }
+  }, true);
 }
 
 // ---------- Каталог "Все нейросети" (полноэкранная модалка) ----------
