@@ -30,7 +30,8 @@ const state = {
   mode: 'text', // 'text' | 'image' | 'video'
   videoModels: [],
   user: null, // {id, email, isPro} | null
-  activeProvider: null
+  activeProvider: null,
+  tools: []
 };
 
 // ---------- DOM refs ----------
@@ -92,6 +93,8 @@ const catalogGrid = el('catalogGrid');
 let catalogMode = 'text';
 const tileRow = el('tileRow');
 const pillRow = el('pillRow');
+const toolsSection = el('toolsSection');
+const toolsRow = el('toolsRow');
 let authMode = 'login'; // 'login' | 'register'
 const sidebarToggle = el('sidebarToggle');
 const proBadge = el('proBadge');
@@ -132,6 +135,7 @@ async function init() {
   }
   renderActiveChat();
   loadModels();
+  loadTools();
   autoresizeTextarea();
 }
 
@@ -1198,6 +1202,47 @@ function initProviderTiles() {
     defaultTile.classList.add('active');
     renderVersionPills(defaultTile.dataset.prefix);
   }
+}
+
+// ---------- Карусель "Инструменты" (готовые пресеты для правки фото, как у Umnik) ----------
+async function loadTools() {
+  try {
+    const r = await fetch('/api/tools');
+    state.tools = await r.json();
+  } catch {
+    state.tools = [];
+  }
+  renderToolsRow();
+}
+
+function renderToolsRow() {
+  if (!state.tools.length) {
+    toolsSection.style.display = 'none';
+    return;
+  }
+  toolsSection.style.display = '';
+  toolsRow.innerHTML = '';
+  state.tools.forEach(tool => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'tool-card';
+    card.innerHTML = `
+      <span class="tool-card-icon">${tool.icon || '✨'}</span>
+      <span class="tool-card-title">${escapeHtml(tool.title)}</span>
+    `;
+    card.addEventListener('click', async () => {
+      await switchMode('image');
+      activeQuickChipKeyword = null;
+      providerRow.querySelectorAll('.provider-chip').forEach(c => c.classList.remove('active'));
+      providerClearBtn.style.display = 'none';
+      renderModelOptions(getModelsForMode());
+      composerInput.value = tool.prompt;
+      composerInput.dispatchEvent(new Event('input'));
+      composerInput.focus();
+      attachBtn.click(); // сразу открываем выбор файла — эти пресеты работают со своим фото
+    });
+    toolsRow.appendChild(card);
+  });
 }
 
 // ---------- Каталог "Все нейросети" (полноэкранная модалка) ----------

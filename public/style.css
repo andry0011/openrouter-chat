@@ -1213,6 +1213,33 @@ button, input, textarea {
 .version-pill:hover { transform: translateY(-1px); }
 .version-pill.active { background: #2B2822; color: #fff; }
 
+.tools-section { width: 100%; max-width: 640px; margin: 32px auto 0; }
+.tools-title { font-size: 14px; font-weight: 700; color: var(--text); margin: 0 0 10px; text-align: left; }
+.tools-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.tool-card {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: none;
+  background: var(--bg-card);
+  box-shadow: 0 1px 4px rgba(43,40,34,0.08);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.tool-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(43,40,34,0.14); }
+.tool-card-icon { font-size: 18px; line-height: 1; }
+.tool-card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+
 .empty-hint { margin: 22px 0 4px; font-size: 14px; color: var(--text); font-weight: 600; }
 .empty-subhint { margin: 0; font-size: 12px; color: var(--text-muted); }
 
