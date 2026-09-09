@@ -78,7 +78,7 @@ function requireAuth(req, res, next) {
 }
 
 function publicUser(u) {
-  return { id: u.id, email: u.email, isPro: !!u.isPro, createdAt: u.createdAt };
+  return { id: u.id, email: u.email, isPro: !!u.isPro, tokens: u.tokens ?? 0, createdAt: u.createdAt };
 }
 
 // ---------- Тихий счётчик использования моделей ----------
@@ -114,6 +114,7 @@ app.post('/api/auth/register', (req, res) => {
     email: String(email).trim(),
     passwordHash: bcrypt.hashSync(password, 10),
     isPro: false,
+    tokens: 40, // приветственный бонус новому аккаунту
     createdAt: new Date().toISOString()
   };
   data.users.push(user);
