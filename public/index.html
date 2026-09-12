@@ -156,6 +156,22 @@
       <button type="button" class="provider-chip" id="providerClearBtn" style="display:none;">✕ Сброс</button>
     </div>
 
+    <div class="video-settings" id="videoSettings" style="display:none;">
+      <label class="vs-field">
+        <span class="vs-label">Длительность (сек)</span>
+        <input type="number" id="vsDuration" class="vs-input" min="1" max="60" placeholder="по умолчанию">
+      </label>
+      <label class="vs-field">
+        <span class="vs-label">Разрешение</span>
+        <input type="text" id="vsResolution" class="vs-input" placeholder="по умолчанию, напр. 720p">
+      </label>
+      <label class="vs-field vs-checkbox">
+        <input type="checkbox" id="vsAudio" checked>
+        <span class="vs-label">Звук</span>
+      </label>
+      <span class="vs-hint" title="У видео-моделей нет единой схемы цены за токены — точную стоимость покажем после генерации. Меньшая длительность/разрешение и отключённый звук обычно снижают цену.">ⓘ Меньше длительность/разрешение — обычно дешевле. Точная цена — после генерации.</span>
+    </div>
+
     <form class="composer" id="composerForm">
       <div class="attach-preview" id="attachPreview" style="display:none;">
         <img id="attachPreviewImg" alt="Прикреплённое изображение" style="display:none;">

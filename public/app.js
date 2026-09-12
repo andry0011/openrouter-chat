@@ -102,6 +102,10 @@ const paywallOverlay = el('paywallOverlay');
 const closePaywall = el('closePaywall');
 const planOptions = el('planOptions');
 const paywallCta = el('paywallCta');
+const videoSettings = el('videoSettings');
+const vsDuration = el('vsDuration');
+const vsResolution = el('vsResolution');
+const vsAudio = el('vsAudio');
 
 // ---------- Storage helpers ----------
 function loadChats() {
@@ -251,7 +255,8 @@ function renderModelOptions(list) {
 
 function selectModel(id, persist) {
   state.selectedModel = id;
-  const m = state.models.find(x => x.id === id);
+  const pool = state.mode === 'video' ? state.videoModels : state.models;
+  const m = pool.find(x => x.id === id);
   modelPickerLabel.textContent = m ? m.name : id;
   if (persist) localStorage.setItem(LS_KEYS.model, id);
   else localStorage.setItem(LS_KEYS.model, id);
@@ -283,6 +288,7 @@ modeToggle.querySelectorAll('.mode-btn').forEach(btn => {
     activeQuickChipKeyword = null;
     providerRow.querySelectorAll('.provider-chip').forEach(c => c.classList.remove('active'));
     providerClearBtn.style.display = 'none';
+    videoSettings.style.display = state.mode === 'video' ? '' : 'none';
     updateComposerHint();
 
     if (state.mode === 'video' && !state.videoModels.length) {
@@ -812,13 +818,20 @@ async function generateVideo(chat, prompt, refImage) {
   scrollToBottom();
 
   try {
+    const duration = vsDuration.value ? Number(vsDuration.value) : undefined;
+    const resolution = vsResolution.value.trim() || undefined;
+    const generate_audio = vsAudio.checked;
+
     const submitRes = await fetch('/api/generate-video', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-openrouter-key': state.apiKey },
       body: JSON.stringify({
         model: state.selectedModel,
         prompt: prompt || 'Сгенерируй видео',
-        ...(refImage ? { input_references: [refImage] } : {})
+        ...(refImage ? { input_references: [refImage] } : {}),
+        ...(duration ? { duration } : {}),
+        ...(resolution ? { resolution } : {}),
+        generate_audio
       })
     });
     const submitJson = await submitRes.json();
@@ -1447,6 +1460,7 @@ function updateComposerHint() {
 async function switchMode(newMode) {
   state.mode = newMode;
   modeToggle.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === newMode));
+  videoSettings.style.display = newMode === 'video' ? '' : 'none';
   if (newMode === 'video' && !state.videoModels.length) {
     modelOptions.innerHTML = '<div class="model-loading">Загружаю видео-модели…</div>';
     await loadVideoModels();
