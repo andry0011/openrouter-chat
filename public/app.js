@@ -286,6 +286,15 @@ modeToggle.querySelectorAll('.mode-btn').forEach(btn => {
     btn.classList.add('active');
     state.mode = btn.dataset.mode;
     activeQuickChipKeyword = null;
+
+    // Переключение режима возвращает на главный экран с плашками-провайдерами —
+    // если текущий чат уже с сообщениями, начинаем новый; если он и так пуст, ничего не плодим.
+    const activeChat = getActiveChat();
+    if (activeChat && activeChat.messages.length > 0) {
+      createChat();
+    } else {
+      renderActiveChat();
+    }
     providerRow.querySelectorAll('.provider-chip').forEach(c => c.classList.remove('active'));
     providerClearBtn.style.display = 'none';
     videoSettings.style.display = state.mode === 'video' ? '' : 'none';
