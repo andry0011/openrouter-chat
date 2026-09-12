@@ -163,13 +163,20 @@
       </label>
       <label class="vs-field">
         <span class="vs-label">Разрешение</span>
-        <input type="text" id="vsResolution" class="vs-input" placeholder="по умолчанию, напр. 720p">
+        <input type="text" id="vsResolution" class="vs-input" list="vsResolutionList" placeholder="по умолчанию">
+        <datalist id="vsResolutionList">
+          <option value="480p">
+          <option value="540p">
+          <option value="720p">
+          <option value="1080p">
+          <option value="4k">
+        </datalist>
       </label>
       <label class="vs-field vs-checkbox">
         <input type="checkbox" id="vsAudio" checked>
         <span class="vs-label">Звук</span>
       </label>
-      <span class="vs-hint" title="У видео-моделей нет единой схемы цены за токены — точную стоимость покажем после генерации. Меньшая длительность/разрешение и отключённый звук обычно снижают цену.">ⓘ Меньше длительность/разрешение — обычно дешевле. Точная цена — после генерации.</span>
+      <span class="vs-hint" title="Список разрешений в подсказке — общие ориентиры, конкретная модель может поддерживать не все из них (тогда вернётся понятная ошибка). У видео-моделей нет единой схемы цены за токены — точную стоимость покажем после генерации.">ⓘ Меньше длительность/разрешение — обычно дешевле. Точная цена — после генерации.</span>
     </div>
 
     <form class="composer" id="composerForm">
