@@ -295,6 +295,7 @@ modeToggle.querySelectorAll('.mode-btn').forEach(btn => {
     } else {
       renderActiveChat();
     }
+    clearComposer();
     providerRow.querySelectorAll('.provider-chip').forEach(c => c.classList.remove('active'));
     providerClearBtn.style.display = 'none';
     videoSettings.style.display = state.mode === 'video' ? '' : 'none';
@@ -704,6 +705,14 @@ composerInput.addEventListener('keydown', (e) => {
 function autoresizeTextarea() {
   composerInput.style.height = 'auto';
   composerInput.style.height = Math.min(composerInput.scrollHeight, 200) + 'px';
+}
+
+// Клик по плашке-рубрике (провайдер/режим) — не должен оставлять в поле
+// ввода текст, набранный под предыдущий выбор.
+function clearComposer() {
+  composerInput.value = '';
+  composerInput.dispatchEvent(new Event('input'));
+  autoresizeTextarea();
 }
 
 composerForm.addEventListener('submit', async (e) => {
@@ -1213,6 +1222,7 @@ tileRow.querySelectorAll('.provider-tile').forEach(tile => {
     tileRow.querySelectorAll('.provider-tile').forEach(t => t.classList.remove('active'));
     tile.classList.add('active');
     renderVersionPills(tile.dataset.prefix);
+    clearComposer();
   });
 });
 
@@ -1492,6 +1502,7 @@ providerRow.querySelectorAll('.provider-chip[data-keyword]').forEach(chip => {
     renderModelOptions(pool);
     if (match) selectModel(match.id, true);
     updateComposerHint();
+    clearComposer();
   });
 });
 providerClearBtn.addEventListener('click', () => {
@@ -1500,6 +1511,7 @@ providerClearBtn.addEventListener('click', () => {
   providerClearBtn.style.display = 'none';
   renderModelOptions(getModelsForMode());
   updateComposerHint();
+  clearComposer();
 });
 
 // ---------- Paywall / subscription (demo mock) ----------
